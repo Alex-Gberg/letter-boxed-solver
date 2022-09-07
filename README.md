@@ -1,4 +1,4 @@
-# Letter Box Solver
+# Letter Boxed Solver
 > This program solves the New York Times Letter Boxed game
 
 ## Table of Contents
