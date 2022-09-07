@@ -88,6 +88,11 @@ def greedyAlgorithm(letterSets):
 
     return solution
 
+def displaySequence(seq):
+    print("SOLUTION: ", end="")
+    for i in range(len(seq)):
+        print(f"{seq[i]}, ", end="") if i != len(seq)-1 else print(seq[i])
+
 if __name__ == "__main__":
     letterSets = getLettersManual()
-    print(greedyAlgorithm(letterSets))
+    displaySequence(greedyAlgorithm(letterSets))
