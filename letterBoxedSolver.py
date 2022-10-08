@@ -83,11 +83,50 @@ def greedyAlgorithm(letterSets):
 
     return solution
 
-def displaySequence(seq):
-    print("SOLUTION: ", end="")
-    for i in range(len(seq)):
-        print(f"{seq[i]}, ", end="") if i != len(seq)-1 else print(seq[i])
+# TODO
+# create a hash map when finding all possible words and organize by starting letter, then only look for next word in that set
+# now it only looks for 2 length sequences but that's not very generic
+import itertools
+import math
+def bruteForceAlgorithm(letterSets):
+    words = findAllPossibleWords(letterSets)
+    
+    bestWordCount = math.inf
+    bestSolutions = []
+    for perm in itertools.permutations(words, r=2):
+        currWordCount = 0
+        currSolution = []
+        remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
+        for word in perm:
+            if currSolution and currSolution[-1][-1] != word[0]:
+                break
 
+            currWordCount += 1
+            currSolution.append(word)
+
+            for a in word:
+                if a in remainingLetters:
+                    remainingLetters.remove(a)
+
+            if not remainingLetters:
+                if currWordCount < bestWordCount:
+                    bestWordCount = currWordCount
+                    bestSolutions = [currSolution]
+                elif currWordCount == bestWordCount:
+                    bestSolutions.append(currSolution)
+                break
+
+    return bestSolutions
+
+# TODO make s in solution(s) conditional on length of solutions
+def displaySolutions(solutions):
+    print(f"=== {len(solutions)} Solution(s) Found! ===")
+    for x, seq in enumerate(solutions):
+        print(f"{x+1}: ", end="")
+        for i in range(len(seq)):
+            print(f"{seq[i]}, ", end="") if i != len(seq)-1 else print(seq[i])
+
+# TODO let the user chooose which algo to use
 if __name__ == "__main__":
     letterSets = getLettersManual()
-    displaySequence(greedyAlgorithm(letterSets))
+    displaySolutions(bruteForceAlgorithm(letterSets))
