@@ -1,4 +1,4 @@
-def setsContain(inp, letterSets):
+def letterSetsContain(inp, letterSets):
     for a in inp:
         for s in letterSets:
             if a in s:
@@ -12,7 +12,7 @@ def getLettersManual():
     for i in range(4):
         while (True):
             inp = input(f"Type the {sides[i]} side letters: ")
-            if len(inp) == 3 and not setsContain(inp, letterSets):
+            if len(inp) == 3 and not letterSetsContain(inp, letterSets):
                 letterSets.append(inp)
                 break
             else:
@@ -21,18 +21,17 @@ def getLettersManual():
     return letterSets
 
 def nextPossibleLetters(letter, letterSets):
-    if not setsContain(letter, letterSets):
+    if not letterSetsContain(letter, letterSets):
         return None
     possibleLetters = []
     for s in letterSets:
         if letter not in s:
-            for a in s:
-                possibleLetters.append(a)
+                possibleLetters += s
     
     return possibleLetters
 
 def findWordsStartingWith(letter, letterSets):
-    if not setsContain(letter, letterSets):
+    if not letterSetsContain(letter, letterSets):
         return None
     
     words = []
@@ -61,11 +60,7 @@ def findAllPossibleWords(letterSets):
 
 def greedyAlgorithm(letterSets):
     words = findAllPossibleWords(letterSets)
-
-    remainingLetters = set()
-    for s in letterSets:
-        for a in s:
-            remainingLetters.add(a)
+    remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
     
     solution = []
     while (remainingLetters):
