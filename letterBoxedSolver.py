@@ -7,8 +7,10 @@ def letterSetsContain(inp, letterSets):
 
 def getLettersManual():
     sides = ["top", "right", "bottom", "left"]
+    
+    print("=== Insert the letters! ===")
+    
     letterSets = []
-
     for i in range(4):
         while (True):
             inp = input(f"Type the {sides[i]} side letters: ")
