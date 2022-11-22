@@ -14,7 +14,7 @@ def getLettersManual():
     for i in range(4):
         while (True):
             inp = input(f"Type the {sides[i]} side letters: ")
-            if len(inp) == 3 and not letterSetsContain(inp, letterSets):
+            if len(inp) == 3 and len(set(inp)) == 3 and not letterSetsContain(inp, letterSets):
                 letterSets.append(inp)
                 break
             else:
@@ -124,7 +124,6 @@ def bruteForceAlgorithm(letterSets):
 
     return bestSolutions
 
-# TODO make s in solution(s) conditional on length of solutions
 def displaySolutions(solutions):
     print(f"=== {len(solutions)} Solution{'' if len(solutions) == 1 else 's'} Found! ===")
     for x, seq in enumerate(solutions):
