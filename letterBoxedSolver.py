@@ -126,7 +126,7 @@ def bruteForceAlgorithm(letterSets):
 
 # TODO make s in solution(s) conditional on length of solutions
 def displaySolutions(solutions):
-    print(f"=== {len(solutions)} Solution(s) Found! ===")
+    print(f"=== {len(solutions)} Solution{'' if len(solutions) == 1 else 's'} Found! ===")
     for x, seq in enumerate(solutions):
         print(f"{x+1}: ", end="")
         for i in range(len(seq)):
