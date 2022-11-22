@@ -87,7 +87,6 @@ def greedyAlgorithm(letterSets):
 
 # TODO
 # create a hash map when finding all possible words and organize by starting letter, then only look for next word in that set
-# now it only looks for 2 length sequences but that's not very generic
 import itertools
 import math
 def bruteForceAlgorithm(letterSets):
@@ -95,28 +94,33 @@ def bruteForceAlgorithm(letterSets):
     
     bestWordCount = math.inf
     bestSolutions = []
-    for perm in itertools.permutations(words, r=2):
-        currWordCount = 0
-        currSolution = []
-        remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
-        for word in perm:
-            if currSolution and currSolution[-1][-1] != word[0]:
-                break
+    r = 1
+    while True:
+        for perm in itertools.permutations(words, r=r):
+            currWordCount = 0
+            currSolution = []
+            remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
+            for word in perm:
+                if currSolution and currSolution[-1][-1] != word[0]:
+                    break
 
-            currWordCount += 1
-            currSolution.append(word)
+                currWordCount += 1
+                currSolution.append(word)
 
-            for a in word:
-                if a in remainingLetters:
-                    remainingLetters.remove(a)
+                for a in word:
+                    if a in remainingLetters:
+                        remainingLetters.remove(a)
 
-            if not remainingLetters:
-                if currWordCount < bestWordCount:
-                    bestWordCount = currWordCount
-                    bestSolutions = [currSolution]
-                elif currWordCount == bestWordCount:
-                    bestSolutions.append(currSolution)
-                break
+                if not remainingLetters:
+                    if currWordCount < bestWordCount:
+                        bestWordCount = currWordCount
+                        bestSolutions = [currSolution]
+                    elif currWordCount == bestWordCount:
+                        bestSolutions.append(currSolution)
+                    break
+        if bestSolutions:
+            break
+        r += 1
 
     return bestSolutions
 
