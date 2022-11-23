@@ -61,6 +61,7 @@ def findAllPossibleWords(letterSets):
     return words
 
 def greedyAlgorithm(letterSets):
+    print("Using a greedy algorithm")
     words = findAllPossibleWords(letterSets)
     remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
     
@@ -90,6 +91,7 @@ def greedyAlgorithm(letterSets):
 import itertools
 import math
 def bruteForceAlgorithm(letterSets):
+    print("Using a brute force algorithm")
     words = findAllPossibleWords(letterSets)
     
     bestWordCount = math.inf
@@ -131,7 +133,19 @@ def displaySolutions(solutions):
         for i in range(len(seq)):
             print(f"{seq[i]}, ", end="") if i != len(seq)-1 else print(seq[i])
 
-# TODO let the user chooose which algo to use
+def selectAlgorithm():
+    print("=== Select the type of algorithm to use ===")
+    options = [greedyAlgorithm, bruteForceAlgorithm]
+    print("1. Greedy\n2. Brute force")
+    try:
+        inp = int(input())
+        return options[inp-1]
+    except:
+        print("invalid input")
+        return -1
+
 if __name__ == "__main__":
     letterSets = getLettersManual()
-    displaySolutions(bruteForceAlgorithm(letterSets))
+    algo = selectAlgorithm()
+    if algo != -1:
+        displaySolutions(algo(letterSets))
