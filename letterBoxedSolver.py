@@ -1,3 +1,5 @@
+import itertools
+
 def letterSetsContain(inp, letterSets):
     for a in inp:
         for s in letterSets:
@@ -22,56 +24,46 @@ def getLettersManual():
 
     return letterSets
 
-def nextPossibleLetters(letter, letterSets):
-    if not letterSetsContain(letter, letterSets):
-        return None
-    possibleLetters = []
-    for s in letterSets:
-        if letter not in s:
-                possibleLetters += s
-    
-    return possibleLetters
+def createNextPossibleLetterMap(letterSets):
+    nextLetters = {}
+    for i in range(len(letterSets)):
+        for a in letterSets[i]:
+            nextLetters[a] = []
+            for j in range(len(letterSets)):
+                if j != i:
+                    nextLetters[a] += letterSets[j]
 
-def findWordsStartingWith(letter, letterSets):
-    if not letterSetsContain(letter, letterSets):
-        return None
-    
-    words = []
+    return nextLetters
+
+def findPossibleWords(letterSets):
+    letters = [a for s in letterSets for a in s]
+    words = {a:[] for a in letters}
+    nextPossibilities = createNextPossibleLetterMap(letterSets)
     with open("filtered_words.txt") as wordList:
         for word in wordList:
             word = word.strip()
-            if word[0] != letter or len(word) < 3:
+            if len(word) < 3 or word[0] not in letters:
                 continue
-            prevLetter = letter
-            for i in range(1, len(word)):
-                validWord = True
-                if word[i] not in nextPossibleLetters(prevLetter, letterSets):
+            validWord = True
+            for i in range(1,len(word)):
+                if word[i] not in nextPossibilities[word[i-1]]:
                     validWord = False
                     break
-                prevLetter = word[i]
             if validWord:
-                words.append(word.strip())
-    return words
-
-def findAllPossibleWords(letterSets):
-    words = []
-    for s in letterSets:
-        for a in s:
-            words.extend(findWordsStartingWith(a, letterSets))
+                words[word[0]].append(word)
     return words
 
 def greedyAlgorithm(letterSets):
-    print("Using a greedy algorithm")
-    words = findAllPossibleWords(letterSets)
+    print("Using a greedy algorithm...")
+    wordsByLetter = findPossibleWords(letterSets)
+    allWords = [word for letterSet in [wordsByLetter[letter] for letter in wordsByLetter] for word in letterSet]
     remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
-    
     solution = []
+    prevLetter = ""
     while (remainingLetters):
         bestWord = None
-        bestLetters = -1
-        for word in words:
-            if (solution and word[0] != solution[-1][-1]):
-                continue
+        bestLetters = 0
+        for word in wordsByLetter[prevLetter] if prevLetter else allWords:
             wordLetters = set()
             for a in word:
                 if a in remainingLetters:
@@ -80,33 +72,31 @@ def greedyAlgorithm(letterSets):
                 bestLetters = len(wordLetters)
                 bestWord = word
         solution.append(bestWord)
-        for a in bestWord:
+        if bestWord == None:
+            return -1
+        prevLetter = bestWord[-1]
+        for a in bestWord:  # type: ignore
             if a in remainingLetters:
                 remainingLetters.remove(a)
 
-    return solution
+    return [solution]
 
-# TODO
-# create a hash map when finding all possible words and organize by starting letter, then only look for next word in that set
-import itertools
-import math
 def bruteForceAlgorithm(letterSets):
-    print("Using a brute force algorithm")
-    words = findAllPossibleWords(letterSets)
+    print("Using a brute force algorithm...")
+    wordsByLetter = findPossibleWords(letterSets)
+    allWords = [word for letterSet in [wordsByLetter[letter] for letter in wordsByLetter] for word in letterSet]
+    allLetters = set([letter for letterSet in letterSets for letter in letterSet])
     
-    bestWordCount = math.inf
     bestSolutions = []
     r = 1
     while True:
-        for perm in itertools.permutations(words, r=r):
-            currWordCount = 0
+        for perm in itertools.permutations(allWords, r=r):
             currSolution = []
-            remainingLetters = set([letter for letterSet in letterSets for letter in letterSet])
+            remainingLetters = set(allLetters)
             for word in perm:
                 if currSolution and currSolution[-1][-1] != word[0]:
                     break
 
-                currWordCount += 1
                 currSolution.append(word)
 
                 for a in word:
@@ -114,11 +104,7 @@ def bruteForceAlgorithm(letterSets):
                         remainingLetters.remove(a)
 
                 if not remainingLetters:
-                    if currWordCount < bestWordCount:
-                        bestWordCount = currWordCount
-                        bestSolutions = [currSolution]
-                    elif currWordCount == bestWordCount:
-                        bestSolutions.append(currSolution)
+                    bestSolutions.append(perm)
                     break
         if bestSolutions:
             break
@@ -146,6 +132,11 @@ def selectAlgorithm():
 
 if __name__ == "__main__":
     letterSets = getLettersManual()
+    
     algo = selectAlgorithm()
     if algo != -1:
-        displaySolutions(algo(letterSets))
+        result = algo(letterSets)
+        if result != -1:    
+            displaySolutions(result)
+        else:
+            print("No solution found")
